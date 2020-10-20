@@ -7,11 +7,6 @@ import os
 synIpDictonary = {}
 boundary = 3 #minimum SYN request without ACK response to signal a syn flood
 
-def get_interface():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--interface", dest="interface", help="Specify interface on which to sniff packets")
-    arguments = parser.parse_args()
-    return arguments.interface
 
 def sniff(iface):
     scapy.sniff(iface=iface, store=False, prn=process_packet)
@@ -72,12 +67,11 @@ def synflood_checker(ipSrc, flagsTCP):
 
 #choose which interface have to sniff
 def sniffing():
-    iface = get_interface()
     listInterface = os.listdir('/sys/class/net')
     i = 0
-    print('digita:\n')
+    print('Select interface:\n')
     for iface in listInterface:
-        print(str(i) + " per l' interfaccia " + iface + '\n')
+        print("Press " + str(i) + " for interface " + iface + '\n')
         i +=1
     selection =-1
     while len(listInterface) <= selection or selection < 0:

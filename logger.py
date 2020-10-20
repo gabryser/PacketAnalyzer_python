@@ -30,7 +30,7 @@ def icmp_logger(type, code, checksum):
 
 
 
-def synfloodflood_log(attackIP):
+def synflood_log(attackIP):
     log = open('SYN_Flood_log', 'a')
     log.write("\n" + time.strftime("%H:%M:%S"))
     log.write("Suspect SYN Flood attack detected!")

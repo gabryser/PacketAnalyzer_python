@@ -66,8 +66,8 @@ def synflood_checker(ipSrc, flagsTCP):
         synIpDictonary[ipSrc] -= 1
 
 #report an IP if sends a lot of SYN request without receiving ACK as response
-   # if ipSrc in synIpDictonary and synIpDictonary[ipSrc] > boundary:
-        # log
+    if ipSrc in synIpDictonary and synIpDictonary[ipSrc] > boundary:
+        synflood_log(ipSrc)
        # print('Flood of SYN pack received from the IP: ' + ipSrc)
 
 #choose which interface have to sniff

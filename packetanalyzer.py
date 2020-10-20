@@ -3,7 +3,6 @@ import scapy.all as scapy
 import argparse
 from logger import *
 import os
-from scapy.layers import http
 
 synIpDictonary = {}
 boundary = 3 #minimum SYN request without ACK response to signal a syn flood
@@ -28,11 +27,9 @@ def process_packet(packet):
 
 #istruction for UDP packets
     if packet.haslayer(scapy.UDP):
-        UDPdestport = packet.sprintf('%UDP.dport%')
-        UDPsourceport= packet.sprintf('%UDP.sport%')
-
-
-
+        UDP_Dport = packet.sprintf('%UDP.dport%')
+        UDP_Sport= packet.sprintf('%UDP.sport%')
+        udp_logger(UDP_Sport, UDP_Dport)
 
 
 #instruction for ICMP packets
@@ -40,17 +37,20 @@ def process_packet(packet):
         IcmpType = packet.sprintf('%ICMP.type%')
         IcmpCode = packet.sprintf('%ICMP.code%')
         IcmpChecksum = packet.sprintf('%ICMP.chksum%')
+        icmp_logger(IcmpType, IcmpCode, IcmpChecksum)
 
 
 #istruction for TCP packet (execute synflood_checker)
     if packet.haslayer(scapy.TCP):
-        Protocol = "TCP"
         flagsTCP = packet.sprintf('%TCP.flags%')
+        TCP_Dport = packet.sprintf('%TCP.dport%')
+        TCP_Sport = packet.sprintf('%TCP.sport%')
         synflood_checker(ipSrc, flagsTCP)
+        tcp_logger(flagsTCP, TCP_Sport, TCP_Dport)
 
 
 
-    print("\nSourceIP: " + ipSrc + "\tDestinationIP: " + ipDst + "\tProtocol: " + Protocol)
+   # print("\nSourceIP: " + ipSrc + "\tDestinationIP: " + ipDst + "\tProtocol: " + Protocol)
 
 
 # function to detect a probably Synflood, add 1 to counter when receive a SYN and remove 1 when receive an ACK as response
@@ -60,7 +60,7 @@ def synflood_checker(ipSrc, flagsTCP):
             synIpDictonary[ipSrc] += 1
         else:
             synIpDictonary[ipSrc] = 1
-        print('IP source: ' + ipSrc + ' TCP flags:' + flagsTCP)
+        #print('IP source: ' + ipSrc + ' TCP flags:' + flagsTCP)
 
     if ipSrc in synIpDictonary and flagsTCP == 'A':
         synIpDictonary[ipSrc] -= 1
@@ -85,4 +85,5 @@ def sniffing():
 
     #insrt selcted interface in this variable, then star sniffing it
     ifaceSelected = listInterface[selection]
+    log_reset()
     sniff(ifaceSelected)

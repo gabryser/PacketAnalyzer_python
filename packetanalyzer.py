@@ -11,6 +11,17 @@ boundary = 3 #minimum SYN request without ACK response to signal a syn flood
 def sniff(iface):
     scapy.sniff(iface=iface, store=False, prn=process_packet)
 
+
+def get_mac(ip):
+    """
+    Returns the MAC address of `ip`, if it is unable to find it
+    for some reason, throws `IndexError`
+    """
+    p = scapy.Ether(dst='ff:ff:ff:ff:ff:ff') / scapy.ARP(pdst=ip)
+    result = scapy.srp(p, timeout=3, verbose=False)[0]
+    return result[0][1].hwsrc
+
+
 def process_packet(packet):
     ipSrc = packet.sprintf('%IP.src%')
     ipDst = packet.sprintf('%IP.dst%')
@@ -44,6 +55,24 @@ def process_packet(packet):
         tcp_logger(flagsTCP, TCP_Sport, TCP_Dport)
 
 
+# if the packet is an ARP packet
+    if packet.haslayer(scapy.ARP):
+        # if it is an ARP response (ARP reply)
+        if packet[scapy.ARP].op == 2:
+            try:
+                # get the real MAC address of the sender
+                real_mac = get_mac(packet[scapy.ARP].psrc)
+                # get the MAC address from the packet sent to us
+                response_mac = packet[scapy.ARP].hwsrc
+                # if they're different, definetely there is an attack
+                if real_mac != response_mac:
+                    print(f"[!] You are under attack, REAL-MAC: {real_mac.upper()}, FAKE-MAC: {response_mac.upper()}")
+            except IndexError:
+                # unable to find the real mac
+                # may be a fake IP or firewall is blocking packets
+                pass
+
+
 
    # print("\nSourceIP: " + ipSrc + "\tDestinationIP: " + ipDst + "\tProtocol: " + Protocol)
 
@@ -64,6 +93,7 @@ def synflood_checker(ipSrc, flagsTCP):
     if ipSrc in synIpDictonary and synIpDictonary[ipSrc] > boundary:
         synflood_log(ipSrc)
        # print('Flood of SYN pack received from the IP: ' + ipSrc)
+
 
 #choose which interface have to sniff
 def sniffing():

@@ -66,6 +66,8 @@ def process_packet(packet):
                 response_mac = packet[scapy.ARP].hwsrc
                 # if they're different, definetely there is an attack
                 if real_mac != response_mac:
+                    ip_attacker = packet.sprintf('%IP.src%')
+                    arp_spoofing_author(ip_attacker)
                     print(f"[!] You are under attack, REAL-MAC: {real_mac.upper()}, FAKE-MAC: {response_mac.upper()}")
             except IndexError:
                 # unable to find the real mac

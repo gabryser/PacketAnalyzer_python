@@ -1,7 +1,8 @@
-from packetanalyzer import *
-from logger import *
+from packetanalyzer import sniffing
+
 
 def main():
     sniffing()
+
 
 main()

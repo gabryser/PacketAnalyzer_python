@@ -38,9 +38,9 @@ def synflood_log(attackIP):
     log.write(" The attack come from this suspected IP address: " +str(attackIP))
 
 
-def arp_spoofing_log(attackIP):
+def arp_spoofing_log(attackIP, attackMAC):
     log = open('Attack_log.txt', 'a')
     log.write('\n_____________________________________________________________________________________________')
     log.write("\n" + time.strftime("%m/%d/%Y, %H:%M:%S"))
     log.write("\nSuspect ARP Spoofing attack detected!")
-    log.write(" The attack come from this suspected IP address: " +str(attackIP))
+    log.write(" The attack come from this suspected IP address: " +str(attackIP) + "MAC: " +str(attackMAC))

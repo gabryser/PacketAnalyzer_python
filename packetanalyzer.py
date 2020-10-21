@@ -70,22 +70,18 @@ def process_packet(packet):
                 response_mac = packet[scapy.ARP].hwsrc
                 # if they're different, definetely there is an attack
                 if real_mac != response_mac:
-                    print(response_mac)
-                    #srp(Ether(dst=ETHER_BROADCAST) / ARP(op=3, hwsrc=mac1, hwdst=mac1)
-                    #cmd = 'arp -a | grep {0}'.format(response_mac)
-                    #print(cmd)
-                    #returned_output = os.system(cmd)
-                    #print(returned_output)
+                    attacker_ip = getIP(response_mac)
+                    arp_spoofing_log(attacker_ip, response_mac)
             except IndexError:
                 # unable to find the real mac
                 # may be a fake IP or firewall is blocking packets
                 pass
 
-#tried to get ip from mac using bash commands
-#def getIP(mac):
- #   out = subprocess.Popen(['arp -a | grep ', mac], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-  #  stdout, stderr = out.communicate()
-   # return stdout
+#get ip from mac using bash commands
+def getIP(mac):
+    out = subprocess.Popen(['arp', '-a', '|', 'grep', mac], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    stdout, stderr = out.communicate()
+    return stdout
 
 
 # to detect a probably Synflood, add 1 to counter when receive a SYN and remove 1 when receive an ACK as response

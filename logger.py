@@ -8,11 +8,11 @@ def log_reset():
     log.write("\nNetwork Scan Date: " + time.strftime("%m/%d/%Y"))
 
 
-def create_log(ipSrc, ipDst, Protocol):
+def create_log(ipSrc, ipDst, protocol):
     log = open('Analysis_log.txt', 'a')
     log.write('\n_____________________________________________________________________________________________')
     log.write("\n" + time.strftime("%H:%M:%S"))
-    log.write("\nSource IP: " + str(ipSrc) + "\tDestination IP: " + str(ipDst) + "\tProtocol: " + str(Protocol))
+    log.write("\nSource IP: " + str(ipSrc) + "  \tDestination IP: " + str(ipDst) + "\tProtocol: " + str(protocol))
 
 
 def tcp_logger(flagsTCP, TCP_Sport, TCP_Dport):
@@ -35,12 +35,12 @@ def synflood_log(attackIP):
     log.write('\n_____________________________________________________________________________________________')
     log.write("\n" + time.strftime("%m/%d/%Y, %H:%M:%S"))
     log.write("\nSuspect SYN Flood attack detected!")
-    log.write(' The attack come from this suspected IP address: '+str(attackIP))
+    log.write(" The attack come from this suspected IP address: " +str(attackIP))
 
 
-def arp_spoofing_author(attackIP):
+def arp_spoofing_log(attackIP):
     log = open('Attack_log.txt', 'a')
     log.write('\n_____________________________________________________________________________________________')
     log.write("\n" + time.strftime("%m/%d/%Y, %H:%M:%S"))
     log.write("\nSuspect ARP Spoofing attack detected!")
-    log.write(' The attack come from this suspected IP address: '+str(attackIP))
+    log.write(" The attack come from this suspected IP address: " +str(attackIP))

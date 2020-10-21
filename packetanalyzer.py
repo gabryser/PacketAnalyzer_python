@@ -23,8 +23,15 @@ def get_mac(ip):
 def process_packet(packet):
     ipSrc = packet.sprintf('%IP.src%')
     ipDst = packet.sprintf('%IP.dst%')
-    Protocol = packet.sprintf('%IP.proto%')
-    create_log(ipSrc, ipDst, Protocol)   # create the log
+    protocol = packet.sprintf('%IP.proto%')
+    arpSrc = packet.sprintf('%ARP.psrc%')
+    arpDst = packet.sprintf('%ARP.pdst%')
+    arp_protocol = "ARP"
+
+    if packet.haslayer(scapy.IP):
+        create_log(ipSrc, ipDst, protocol)   # create the log
+    else:
+        create_log(arpSrc, arpDst, arp_protocol)
 
 
 # istruction for UDP packets
@@ -62,9 +69,9 @@ def process_packet(packet):
                 response_mac = packet[scapy.ARP].hwsrc
                 # if they're different, definetely there is an attack
                 if real_mac != response_mac:
-                    ip_attacker = packet.sprintf('%IP.src%')
-                    arp_spoofing_author(ip_attacker)
-                   # print(f"[!] You are under attack, REAL-MAC: {real_mac.upper()}, FAKE-MAC: {response_mac.upper()}")
+                    ip_attacker = response_mac.upper()
+                    arp_spoofing_log(ip_attacker)
+                    print(ip_attacker)
             except IndexError:
                 # unable to find the real mac
                 # may be a fake IP or firewall is blocking packets
@@ -103,5 +110,4 @@ def sniffing():
 
     # insrt selcted interface in this variable, then star sniffing it
     ifaceSelected = listInterface[selection]
-    log_reset()
     sniff(ifaceSelected)

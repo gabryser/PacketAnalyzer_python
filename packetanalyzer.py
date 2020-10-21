@@ -10,17 +10,13 @@ boundary = 3  # minimum SYN request without ACK response to signal a syn flood
 def sniff(iface):
     scapy.sniff(iface=iface, store=False, prn=process_packet)
 
-
+# return mac address of 'ip' and if dont find it throws error
 def get_mac(ip):
-    """
-    Returns the MAC address of `ip`, if it is unable to find it
-    for some reason, throws `IndexError`
-    """
     p = scapy.Ether(dst='ff:ff:ff:ff:ff:ff') / scapy.ARP(pdst=ip)
     result = scapy.srp(p, timeout=3, verbose=False)[0]
     return result[0][1].hwsrc
 
-
+# process the packets
 def process_packet(packet):
     ipSrc = packet.sprintf('%IP.src%')
     ipDst = packet.sprintf('%IP.dst%')
@@ -29,8 +25,9 @@ def process_packet(packet):
     arpDst = packet.sprintf('%ARP.pdst%')
     arp_protocol = "ARP"
 
+# create log ARP or IP
     if packet.haslayer(scapy.IP):
-        create_log(ipSrc, ipDst, protocol)   # create the log
+        create_log(ipSrc, ipDst, protocol)
     else:
         create_log(arpSrc, arpDst, arp_protocol)
 
@@ -71,7 +68,7 @@ def process_packet(packet):
                 # if they're different, definetely there is an attack
                 if real_mac != response_mac:
                     attacker_ip = getIP(response_mac)
-                    arp_spoofing_log(attacker_ip, response_mac)
+                    arp_spoofing_log(attacker_ip, response_mac) # log attacker data
             except IndexError:
                 # unable to find the real mac
                 # may be a fake IP or firewall is blocking packets
